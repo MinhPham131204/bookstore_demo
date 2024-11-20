@@ -1,16 +1,15 @@
 const { DataTypes } = require("sequelize");
+const sequelize = require("../database/configDB");
 
-module.exports = model;
-
-function model(sequelize) {
-  const attributes = {
+const Preferential = sequelize.define("Preferential", 
+  {
     ID: {
       type: DataTypes.INTEGER,
       primaryKey: true,
-      autoIncrement: true, // Reflects IDENTITY(1,1)
+      autoIncrement: true,
     },
     name: {
-      type: DataTypes.STRING(255), // Maps to nvarchar(255)
+      type: DataTypes.STRING, 
       allowNull: true,
     },
     calculation: {
@@ -21,14 +20,11 @@ function model(sequelize) {
         max: 0.7,
       },
     },
-  };
-
-  const options = {
-    tableName: "Preferential",
+  },
+  {
     freezeTableName: true,
-    // don't add the timestamp attributes (updatedAt, createdAt)
     timestamps: false,
-  };
+  },
+)
 
-  return sequelize.define("Preferential", attributes, options);
-}
+module.exports = Preferential

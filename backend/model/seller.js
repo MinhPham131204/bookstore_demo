@@ -1,9 +1,8 @@
 const { DataTypes } = require("sequelize");
+const sequelize = require("../database/configDB");
 
-module.exports = model;
-
-function model(sequelize) {
-  const attributes = {
+const Seller = sequelize.define("Seller", 
+  {
     ID: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
@@ -17,14 +16,11 @@ function model(sequelize) {
       type: DataTypes.STRING(100),
       allowNull: false,
     },
-  };
-
-  const options = {
-    tableName: "Seller",
+  },
+  {
     freezeTableName: true,
-    // don't add the timestamp attributes (updatedAt, createdAt)
     timestamps: false,
-  };
+  },
+)
 
-  return sequelize.define("Seller", attributes, options);
-}
+module.exports = Seller

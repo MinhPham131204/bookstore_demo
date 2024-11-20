@@ -1,9 +1,10 @@
 const { DataTypes } = require("sequelize");
+const sequelize = require('../database/configDB');
 
-module.exports = model;
+const Preferential = require("./preferential");
 
-function model(sequelize) {
-  const attributes = {
+const Discount = sequelize.define("Discount", 
+  {
     discountID: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
@@ -13,8 +14,8 @@ function model(sequelize) {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: "Preferential", 
-        key: "ID",
+        model: Preferential, 
+        sourceKey: "ID",
       },
       onDelete: "CASCADE",
       onUpdate: "CASCADE", 
@@ -41,14 +42,14 @@ function model(sequelize) {
       allowNull: false,
       defaultValue: false, // Default is 0
     },
-  };
-
-  const options = {
-    tableName: "Discount",
+  },
+  {
     freezeTableName: true,
-    // don't add the timestamp attributes (updatedAt, createdAt)
     timestamps: false,
-  };
+  },
+)
 
-  return sequelize.define("Discount", attributes, options);
-}
+Preferential.hasMany(Discount)
+Discount.belongsTo(Preferential)
+
+module.exports = Discount

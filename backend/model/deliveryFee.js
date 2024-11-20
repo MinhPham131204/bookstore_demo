@@ -1,9 +1,8 @@
 const { DataTypes } = require("sequelize");
+const sequelize = require('../database/configDB')
 
-module.exports = model;
-
-function model(sequelize) {
-  const attributes = {
+const DeliveryFee = sequelize.define("DeliveryFee", 
+  {
     ID: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
@@ -33,14 +32,11 @@ function model(sequelize) {
       type: DataTypes.DECIMAL(19, 4), // Maps to SQL's `money` type
       allowNull: false,
     },
-  };
-
-  const options = {
-    tableName: "DeliveryFee",
+  },
+  {
     freezeTableName: true,
-    // don't add the timestamp attributes (updatedAt, createdAt)
     timestamps: false,
-  };
+  }
+)
 
-  return sequelize.define("DeliveryFee", attributes, options);
-}
+module.exports = DeliveryFee

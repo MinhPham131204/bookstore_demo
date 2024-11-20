@@ -1,31 +1,32 @@
 const { DataTypes } = require("sequelize");
+const sequelize = require('../database/configDB')
 
-module.exports = model;
+const Book = require('./book')
 
-function model(sequelize) {
-  const attributes = {
+const BookImage = sequelize.define("bookImage",
+  {
     bookID: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: "Book", // References the 'Book' table
-        key: "bookID",
+        model: Book,
+        sourceKey: 'bookID',
       },
-      onDelete: "CASCADE", // Reflects 'on delete cascade'
-      onUpdate: "CASCADE", // Reflects 'on update cascade'
+      onDelete: 'CASCADE', 
+      onUpdate: 'CASCADE', 
     },
     image: {
-      type: DataTypes.STRING(255), // Maps to varchar(255)
+      type: DataTypes.STRING(255), 
       allowNull: false,
     },
-  };
-
-  const options = {
-    tableName: "bookImage",
+  },
+  {
     freezeTableName: true,
-    // don't add the timestamp attributes (updatedAt, createdAt)
     timestamps: false,
-  };
+  },
+)
 
-  return sequelize.define("bookImage", attributes, options);
-}
+Book.hasMany(BookImage)
+BookImage.belongsTo(Book)
+
+module.exports = BookImage

@@ -1,37 +1,39 @@
 const { DataTypes } = require("sequelize");
+const sequelize = require('../database/configDB')
 
-module.exports = model;
+const Discount = require('./discount')
+const Book = require('./book')
 
-function model(sequelize) {
-  const attributes = {
+const DiscountDetail = sequelize.define("DiscountDetail", 
+  {
     discountID: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: "Discount",
-        key: "discountID",
+        model: Discount, 
+        sourceKey: 'discountID',
       },
-      onDelete: "CASCADE", 
-      onUpdate: "CASCADE", 
+      onDelete: 'CASCADE', // Reflects 'on delete cascade'
+      onUpdate: 'CASCADE', // Reflects 'on update cascade'
     },
     bookID: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: "Book", 
-        key: "bookID",
+        model: Book, 
+        sourceKey: 'ID',
       },
-      onDelete: "CASCADE",
-      onUpdate: "CASCADE", 
+      onDelete: 'CASCADE', 
+      onUpdate: 'CASCADE', 
     },
-  };
-
-  const options = {
-    tableName: "DiscountDetail",
+  },
+  {
     freezeTableName: true,
-    // don't add the timestamp attributes (updatedAt, createdAt)
     timestamps: false,
-  };
+  }
+)
 
-  return sequelize.define("DiscountDetail", attributes, options);
-}
+Discount.belongsToMany(Book, { through: DiscountDetail });
+Book.belongsToMany(Discount, { through: DiscountDetail });
+
+module.exports = DiscountDetail

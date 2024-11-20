@@ -1,28 +1,30 @@
 const { DataTypes } = require("sequelize");
+const sequelize = require('../database/configDB')
 
-module.exports = model;
+const Customer = require('./customer')
+const Book = require('./book')
 
-function model(sequelize) {
-  const attributes = {
+const Cart = sequelize.define("Cart", 
+  {
     customerID: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: "Customer", // Name of the related table
-        key: "userID",
+        model: Customer, // Name of the related table
+        sourceKeykey: 'userID',
       },
-      onDelete: "CASCADE", // Aligns with `ON DELETE CASCADE`
-      onUpdate: "CASCADE", // Aligns with `ON UPDATE CASCADE`
+      onDelete: 'CASCADE', // Aligns with `ON DELETE CASCADE`
+      onUpdate: 'CASCADE', // Aligns with `ON UPDATE CASCADE`
     },
     bookID: {
       type: DataTypes.INTEGER,
-      allowNull: true, // Allows null because of `ON DELETE SET NULL`
+      allowNull: true,
       references: {
-        model: "Book", // Name of the related table
-        key: "bookID",
+        model: Book, // Name of the related table
+        sourceKey: 'bookID',
       },
-      onDelete: "CASCADE", 
-      onUpdate: "CASCADE", 
+      onDelete: 'SET NULL', // Aligns with `ON DELETE SET NULL`
+      onUpdate: 'CASCADE', // Aligns with `ON UPDATE CASCADE`
     },
     quantity: {
       type: DataTypes.INTEGER,
@@ -31,14 +33,14 @@ function model(sequelize) {
         min: 1, // Ensures quantity is at least 1
       },
     },
-  };
-
-  const options = {
-    tableName: "Cart",
+  },
+  {
     freezeTableName: true,
-    // don't add the timestamp attributes (updatedAt, createdAt)
     timestamps: false,
-  };
+  }
+)
 
-  return sequelize.define("Cart", attributes, options);
-}
+Customer.belongsToMany(Book, { through: Cart });
+Book.belongsToMany(Customer, { through: Cart });
+
+module.exports = Cart

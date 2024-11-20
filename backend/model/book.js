@@ -1,39 +1,44 @@
 const { DataTypes } = require("sequelize");
 
-module.exports = model;
+const sequelize = require('../database/configDB')
+const Category = require("./category")
 
-function model(sequelize) {
-  const attributes = {
+const Book = sequelize.define("Book", 
+  {
     bookID: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
     },
     title: {
-      type: DataTypes.TEXT, // `nvarchar(max)` maps to Sequelize's TEXT type
+      type: DataTypes.STRING, // `nvarchar(max)` maps to Sequelize's TEXT type
       allowNull: false,
       unique: true,
     },
     author: {
-      type: DataTypes.STRING(100),
+      type: DataTypes.STRING,
       allowNull: false,
     },
-    category: {
+    translator: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    categoryID: {
       type: DataTypes.INTEGER,
-      allowNull: true, // Allows null because of `ON DELETE SET NULL`
+      allowNull: true,
       references: {
-        model: "Category", // Name of the related table
-        key: "ID",
+        model: Category,
+        sourceKey: "ID",
       },
-      onDelete: "SET NULL",
-      onUpdate: "CASCADE",
+      onDelete: 'SET NULL', // Reflects 'on delete set null'
+      onUpdate: 'CASCADE', // Reflects 'on update cascade'
     },
     price: {
       type: DataTypes.DECIMAL(19, 4), // `money` in SQL maps to DECIMAL
       allowNull: false,
     },
     publisher: {
-      type: DataTypes.STRING(100),
+      type: DataTypes.STRING,
       allowNull: false,
     },
     publishYear: {
@@ -59,14 +64,14 @@ function model(sequelize) {
         min: 0, // Ensures stockQuantity >= 0
       },
     },
-  };
-
-  const options = {
-    tableName: "Book",
+  },
+  {
     freezeTableName: true,
-    // don't add the timestamp attributes (updatedAt, createdAt)
     timestamps: false,
-  };
+  }
+)
 
-  return sequelize.define("Book", attributes, options);
-}
+Category.hasMany(Book)
+Book.belongsTo(Category)
+
+module.exports = Book

@@ -1,9 +1,9 @@
 const { DataTypes } = require("sequelize");
+const sequelize = require("../database/configDB");
 
-module.exports = model;
-
-function model(sequelize) {
-  const attributes = {
+const Customer = sequelize.define(
+  "Customer",
+  {
     userID: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
@@ -50,14 +50,11 @@ function model(sequelize) {
         isNumeric: true, // Ensures the value contains only numbers
       },
     },
-  };
-
-  const options = {
-    tableName: "Customer",
+  },
+  {
     freezeTableName: true,
-    // don't add the timestamp attributes (updatedAt, createdAt)
     timestamps: false,
-  };
+  }
+);
 
-  return sequelize.define("Customer", attributes, options);
-}
+module.exports = Customer;

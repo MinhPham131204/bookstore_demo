@@ -1,9 +1,11 @@
 const { DataTypes } = require("sequelize");
+const sequelize = require('../database/configDB')
 
-module.exports = model;
+const Orders = require('./order')
+const Book = require('./book')
 
-function model(sequelize) {
-  const attributes = {
+const OrderDetail = sequelize.define("OrderDetail", 
+  {
     ID: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
@@ -13,8 +15,8 @@ function model(sequelize) {
       type: DataTypes.INTEGER,
       allowNull: false, // Allows null because of `ON DELETE SET NULL`
       references: {
-        model: "Orders", // Name of the related table
-        key: "orderID",
+        model: Orders, // Name of the related table
+        sourceKey: "orderID",
       },
       onDelete: "CASCADE", // Aligns with `ON DELETE SET NULL`
       onUpdate: "CASCADE", // Aligns with `ON UPDATE CASCADE`
@@ -23,8 +25,8 @@ function model(sequelize) {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: "Book", // Name of the related table
-        key: "bookID",
+        model: Book, // Name of the related table
+        sourceKey: "bookID",
       },
       onDelete: "CASCADE", // Aligns with `ON DELETE CASCADE`
       onUpdate: "CASCADE", // Aligns with `ON UPDATE CASCADE`
@@ -37,17 +39,17 @@ function model(sequelize) {
       },
     },
     price: {
-      type: DataTypes.DECIMAL(19, 4), // Maps to SQL `money` type
+      type: DataTypes.DECIMAL(19, 4),
       allowNull: true,
     },
-  };
-
-  const options = {
-    tableName: "OrderDetail",
+  },
+  {
     freezeTableName: true,
-    // don't add the timestamp attributes (updatedAt, createdAt)
     timestamps: false,
-  };
+  },
+)
 
-  return sequelize.define("OrderDetail", attributes, options);
-}
+Orders.belongsToMany(Book, { through: OrderDetail });
+Book.belongsToMany(Orders, { through: OrderDetail });
+
+module.exports = OrderDetail
