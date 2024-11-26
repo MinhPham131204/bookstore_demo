@@ -11,7 +11,7 @@ const Cart = sequelize.define("Cart",
       allowNull: false,
       references: {
         model: Customer, // Name of the related table
-        sourceKeykey: 'userID',
+        sourceKey: 'userID',
       },
       onDelete: 'CASCADE', // Aligns with `ON DELETE CASCADE`
       onUpdate: 'CASCADE', // Aligns with `ON UPDATE CASCADE`

@@ -49,7 +49,7 @@ const Discount = sequelize.define("Discount",
   },
 )
 
-Preferential.hasMany(Discount)
-Discount.belongsTo(Preferential)
+Preferential.hasMany(Discount, { foreignKey: "type" })
+Discount.belongsTo(Preferential, { foreignKey: "type" })
 
 module.exports = Discount

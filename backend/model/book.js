@@ -71,7 +71,7 @@ const Book = sequelize.define("Book",
   }
 )
 
-Category.hasMany(Book)
-Book.belongsTo(Category)
+Category.hasMany(Book, { foreignKey: "categoryID" })
+Book.belongsTo(Category, { foreignKey: "categoryID" })
 
 module.exports = Book

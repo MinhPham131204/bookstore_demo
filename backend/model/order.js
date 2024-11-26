@@ -71,10 +71,10 @@ const Orders = sequelize.define("Orders",
   },
 )
 
-Customer.hasMany(Orders)
-Orders.belongsTo(Customer)
+Customer.hasMany(Orders, { foreignKey: 'customerID' })
+Orders.belongsTo(Customer, { foreignKey: 'customerID' })
 
-DeliveryFee.hasMany(Orders)
-Orders.belongsTo(DeliveryFee)
+DeliveryFee.hasMany(Orders, { foreignKey: 'deliveryFee' })
+Orders.belongsTo(DeliveryFee, { foreignKey: 'deliveryFee' })
 
 module.exports = Orders

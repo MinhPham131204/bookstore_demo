@@ -8,9 +8,10 @@ const BookImage = sequelize.define("bookImage",
     bookID: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      primaryKey: true,
       references: {
         model: Book,
-        sourceKey: 'bookID',
+        key: 'bookID',
       },
       onDelete: 'CASCADE', 
       onUpdate: 'CASCADE', 
@@ -18,6 +19,10 @@ const BookImage = sequelize.define("bookImage",
     image: {
       type: DataTypes.STRING(255), 
       allowNull: false,
+      primaryKey: true,
+    },
+    ssn: {
+      type: DataTypes.INTEGER,
     },
   },
   {
@@ -26,7 +31,7 @@ const BookImage = sequelize.define("bookImage",
   },
 )
 
-Book.hasMany(BookImage)
-BookImage.belongsTo(Book)
+Book.hasMany(BookImage, { foreignKey: 'bookID' });
+BookImage.belongsTo(Book, { foreignKey: 'bookID' });
 
 module.exports = BookImage
