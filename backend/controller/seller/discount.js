@@ -31,7 +31,14 @@ class BookController {
   // [PUT] /product/:id
 
   // [DELETE] /discount/preferential/:id
-  
+  async deleteDiscount(req, res) {
+    return await Discount.destroy({
+      where: {
+        discountID: req.params.id,
+      },
+    });
+  }
+
 }
 
 module.exports = new BookController();

@@ -56,6 +56,7 @@ const Book = sequelize.define("Book",
     },
     soldAmount: {
       type: DataTypes.INTEGER,
+      defaultValue: 0,
     },
     stockQuantity: {
       type: DataTypes.INTEGER,

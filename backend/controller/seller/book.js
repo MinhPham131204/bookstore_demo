@@ -1,16 +1,37 @@
 const sequelize = require("../../database/configDB");
 
 const Book = require("../../model/book");
-const Customer = require("../../model/customer");
 const BookImage = require("../../model/image");
-const Rating = require("../../model/rating");
+
+require("dotenv").config();
+
+const { google } = require("googleapis");
+const fs = require("fs");
+const path = require("path");
+
+const CLIENT_ID = process.env.CLIENT_ID;
+const CLIENT_SECRET = process.env.CLIENT_SECRET;
+const REDIRECT_URI = process.env.REDIRECT_URI;
+const REFRESH_TOKEN = process.env.REFRESH_TOKEN;
+
+const oauth2Client = new google.auth.OAuth2(
+  CLIENT_ID,
+  CLIENT_SECRET,
+  REDIRECT_URI
+);
+oauth2Client.setCredentials({ refresh_token: REFRESH_TOKEN });
+
+const drive = google.drive({
+  version: "v3",
+  auth: oauth2Client,
+});
 
 class BookController {
-
   // [GET] /product/list
   async showBookList(req, res) {
-    return res.json( await sequelize.query(
-      `
+    return res.json(
+      await sequelize.query(
+        `
       WITH firstImage as (
         select * from bookImage
         where ssn in (
@@ -26,41 +47,86 @@ class BookController {
           Category c ON c.ID = b.categoryID
         ORDER BY b.bookID;
     `,
-      { type: sequelize.QueryTypes.SELECT }
-    ));
+        { type: sequelize.QueryTypes.SELECT }
+      )
+    );
   }
 
   // [GET] /product/:id/info
-  async showBookInfo (req, res) {
-    const {id} = req.params
+  async showBookInfo(req, res) {
+    const { id } = req.params;
 
-    const book = await Book.findByPk(id)
+    const book = await Book.findByPk(id);
 
-    const result = book.get()
+    const result = book.get();
 
     const img = await BookImage.findAll({
       where: {
-        bookID: id
-      }
-    })
+        bookID: id,
+      },
+    });
 
-    result.image = []
+    result.image = [];
 
     for (let e of img) {
-      result.image.push(e.image)
+      result.image.push(e.image);
     }
 
-    return res.json(result)
+    return res.json(result);
   }
 
   // [GET] /product/create => render create new Book UI
+  create(req, res) {
+    res.render("form");
+  }
 
   // [POST] => re-direct to /product/list after creating
+  async storeBook(req, res) {
+    const createFile = await drive.files.create({
+      requestBody: {
+        name: req.file.originalname,
+        mimeType: "image/jpg",
+      },
+      media: {
+        mimeType: req.file.mimetype,
+        body: fs.createReadStream(req.file.path),
+      },
+    });
+
+    const fileId = createFile.data.id;
+    console.log(createFile.data);
+    const shared = await drive.permissions.create({
+      fileId,
+      requestBody: {
+        role: "reader",
+        type: "anyone",
+      },
+    });
+
+    const getUrl = await drive.files.get({
+      fileId,
+      fields: "webViewLink, webContentLink",
+    });
+
+    req.body.price = req.body.price.replace(/\D/g, '')
+
+    const newBook = await Book.create(req.body);
+    const newImage = await BookImage.create(
+      { 
+        bookID: newBook.bookID, 
+        image: getUrl.data.webViewLink,
+    })
+
+    fs.unlinkSync(req.file.path);
+
+    res.redirect('/product/list')
+  }
 
   // [GET] /product/rating
   async showRating(req, res) {
-    return res.json(await sequelize.query(
-      `SELECT TOP 20 
+    return res.json(
+      await sequelize.query(
+        `SELECT TOP 20 
           c.username, 
           b.title, 
           r.rating
@@ -72,14 +138,31 @@ class BookController {
           Book b ON b.bookID = r.bookID
        ORDER BY 
           r.rating DESC;`,
-      { type: sequelize.QueryTypes.SELECT }
-    ));
+        { type: sequelize.QueryTypes.SELECT }
+      )
+    );
   }
 
   // [PUT] /product/:id
+  async updateBook(req, res) {
+    return await User.update(
+      req.body,
+      {
+        where: {
+          lastName: null,
+        },
+      },
+    );
+  }
 
   // [DELETE] /product/:id
-  
+  async deleteBook(req, res) {
+    return await Book.destroy({
+      where: {
+        bookID: req.params.id,
+      },
+    });
+  }
 }
 
-module.exports = new BookController()
+module.exports = new BookController();

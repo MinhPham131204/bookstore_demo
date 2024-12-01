@@ -3,6 +3,7 @@ const sequelize = require("../../database/configDB");
 
 const Order = require("../../model/order");
 const OrderDetail = require("../../model/orderDetail");
+const Customer = require("../../model/customer");
 
 class Dashboard {
   // [GET] /revenue/day
@@ -25,7 +26,7 @@ class Dashboard {
   }
 
   // [GET] /revenue/month
-  async revenueByMonth(month) {
+  async revenueByMonth(month = (new Date()).getMonth()) {
     return await OrderDetail.findAll({
       attributes: [
         [sequelize.fn("SUM", sequelize.col("price")), "totalByMonth"],
@@ -53,7 +54,7 @@ class Dashboard {
   }
 
   // [GET] /revenue/year
-  async revenueByYear(year) {
+  async revenueByYear(year = (new Date()).getFullYear()) {
     return await OrderDetail.findAll({
       attributes: [[sequelize.fn("SUM", sequelize.col("price")), "totalByDay"]],
       include: [
@@ -98,6 +99,22 @@ class Dashboard {
       { type: sequelize.QueryTypes.SELECT }
     );
   }
+
+  async topNewOrder() {
+    return await Order.findAll({
+      include: [
+        {
+          model: Customer,
+          attributes: ['username', 'email', 'hashPassword']
+        }
+      ],
+      order: [
+        ['orderedTime', 'DESC']
+      ],
+      limit: 5,
+    })
+  }
+
 }
 
 module.exports = new Dashboard();
