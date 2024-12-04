@@ -105,7 +105,7 @@ class BookController {
 
     req.body.price = req.body.price.replace(/\D/g, '')
 
-    const directLink = `https://drive.google.com/uc?id=${fileId}&sz=w1000`
+    const directLink = `https://drive.google.com/thumbnail?id=${fileId}&sz=w1000`
 
     const newBook = await Book.create(req.body);
     await BookImage.create(
