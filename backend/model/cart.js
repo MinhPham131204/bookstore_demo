@@ -9,6 +9,7 @@ const Cart = sequelize.define("Cart",
     customerID: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      primaryKey: true,
       references: {
         model: Customer, // Name of the related table
         sourceKey: 'userID',
@@ -19,6 +20,7 @@ const Cart = sequelize.define("Cart",
     bookID: {
       type: DataTypes.INTEGER,
       allowNull: true,
+      primaryKey: true,
       references: {
         model: Book, // Name of the related table
         sourceKey: 'bookID',
@@ -40,7 +42,10 @@ const Cart = sequelize.define("Cart",
   }
 )
 
-Customer.belongsToMany(Book, { through: Cart });
-Book.belongsToMany(Customer, { through: Cart });
+Customer.hasMany(Cart, { foreignKey: 'customerID' })
+Cart.belongsTo(Customer, { foreignKey: 'customerID' })
+
+Book.hasMany(Cart, { foreignKey: 'bookID' })
+Cart.belongsTo(Book, { foreignKey: 'bookID' })
 
 module.exports = Cart

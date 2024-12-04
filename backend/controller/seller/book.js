@@ -94,8 +94,8 @@ class BookController {
     });
 
     const fileId = createFile.data.id;
-    console.log(createFile.data);
-    const shared = await drive.permissions.create({
+    
+    await drive.permissions.create({
       fileId,
       requestBody: {
         role: "reader",
@@ -103,23 +103,19 @@ class BookController {
       },
     });
 
-    const getUrl = await drive.files.get({
-      fileId,
-      fields: "webViewLink, webContentLink",
-    });
-
     req.body.price = req.body.price.replace(/\D/g, '')
 
+    const directLink = `https://drive.google.com/uc?id=${fileId}&sz=w1000`
+
     const newBook = await Book.create(req.body);
-    const newImage = await BookImage.create(
+    await BookImage.create(
       { 
         bookID: newBook.bookID, 
-        image: getUrl.data.webViewLink,
+        image: directLink,
     })
 
-    fs.unlinkSync(req.file.path);
 
-    res.redirect('/product/list')
+    res.redirect('/seller/product/list')
   }
 
   // [GET] /product/rating
@@ -145,11 +141,11 @@ class BookController {
 
   // [PUT] /product/:id
   async updateBook(req, res) {
-    return await User.update(
+    return await Book.update(
       req.body,
       {
         where: {
-          lastName: null,
+          bookID: req.params.id,
         },
       },
     );

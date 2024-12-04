@@ -9,6 +9,7 @@ const Rating = sequelize.define("Rating",
     customerID: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      primaryKey: true,
       references: {
         model: Customer, // References the 'Customer' table
         key: 'userID',
@@ -19,6 +20,7 @@ const Rating = sequelize.define("Rating",
     bookID: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      primaryKey: true,
       references: {
         model: Book, // References the 'Book' table
         key: 'bookID',

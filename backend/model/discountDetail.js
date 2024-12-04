@@ -9,6 +9,7 @@ const DiscountDetail = sequelize.define("DiscountDetail",
     discountID: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      primaryKey: true,
       references: {
         model: Discount, 
         sourceKey: 'discountID',
@@ -19,6 +20,7 @@ const DiscountDetail = sequelize.define("DiscountDetail",
     bookID: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      primaryKey: true,
       references: {
         model: Book, 
         sourceKey: 'ID',
@@ -33,7 +35,10 @@ const DiscountDetail = sequelize.define("DiscountDetail",
   }
 )
 
-Discount.belongsToMany(Book, { through: DiscountDetail });
-Book.belongsToMany(Discount, { through: DiscountDetail });
+Discount.hasMany(DiscountDetail, { foreignKey: 'discountID' })
+DiscountDetail.belongsTo(Discount, { foreignKey: 'discountID' })
+
+Book.hasMany(DiscountDetail, { foreignKey: 'bookID' })
+DiscountDetail.belongsTo(Book, { foreignKey: 'bookID' })
 
 module.exports = DiscountDetail

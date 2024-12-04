@@ -1,55 +1,85 @@
-const express = require('express');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken'); // For generating JWT tokens
 const Customer = require("../../model/customer"); // Adjust path to your User model
-const sequelize = require("../../database/configDB");
 
-const app = express();
-app.use(express.json());
+// app.use(methodOverride("_method"));
 
-// Endpoint for retrieving and updating personal information
-app.post('/change-personal-info', async (req, res) => {
-  const { email, newInfo } = req.body;  // Assuming newInfo contains the updated data (e.g., phone number, address)
+class Info {
+  //[GET] /Info/:id
+  async showInfo(req, res) {
+    try {
+      if (req.cookies.userID) {
+        const info = await Customer.findOne({
+          where: { userID: req.cookies.userID },
+        });
 
-  try {
-    // 1. Requesting the current personal information
-    // Fetch the user's current information from the database
-    const customer = await Customer.findOne({
-      where: { email: email }
-    });
-
-    if (!customer) {
-      return res.status(404).json({ message: 'Customer not found' });
-    }
-
-    // 2. If information retrieval is successful, return current data
-    res.status(200).json({
-      message: 'Personal information retrieved successfully',
-      currentInfo: {
-        username: customer.username,
-        email: customer.email,
-        phoneNum: customer.phoneNum,
-        userAddress: customer.userAddress,
+        res.status(200).json(info);
       }
-    });
-
-    // 3. Allowing the user to change the information (updating)
-    // Update the customer's information
-    await Customer.update(newInfo, { where: { email: email } });
-
-    // 4. Returning success message after update
-    res.status(200).json({
-      message: 'Personal information updated successfully',
-      updatedInfo: newInfo
-    });
-
-  } catch (error) {
-    console.error('Error:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    } catch (err) {
+      res.status(500).json("Server error");
+    }
   }
-});
 
-// To start the server (you can adjust port)
-app.listen(3000, () => {
-  console.log('Server is running on port 3000');
-});
+  //[PUT] /Info/:id/edit
+  async changeInfo(req, res) {
+    try {
+      if (req.cookies.userID) {
+        const info = await Customer.findOne({
+          where: { userID: req.cookies.userID },
+        });
+
+        await Customer.update(req.body, {
+          where: {
+            userID: req.cookies.userID,
+          },
+        });
+
+        res.status(200).redirect("");
+      }
+    } catch (err) {
+      res.status(500).json("Server error");
+    }
+  }
+
+  // [PUT] /Info/:id/changePassword
+  async changePassword(req, res) {
+    try{
+      if (req.cookies.userID) {
+        const user = await Customer.findAll({
+          attributes: ["hashPassword"],
+          where: { hashPassword: req.body.hashPassword },
+        });
+        if (user.length) {
+          const newPassword = req.body.newPassword;
+
+          const confirmPassword = req.body.confirmPassword;
+          if (newPassword == confirmPassword) {
+            await Customer.update(
+              {
+                hashPassword: newPassword,
+              },
+              {
+                where: {
+                  userID: req.cookies.userID,
+                },
+              }
+            );
+          } 
+          else {
+            return res.json(404)({
+              message: "Nhập lại mật khẩu không đúng",
+            });
+          }
+        } 
+        else {
+          return res.json(404)({
+            message: "Mật khẩu người dùng không chính xác",
+          });
+        }
+      }
+    }
+    catch(err) {
+      res.status(500).json("Server error");
+    }
+  }
+}
+
+module.exports = new Info();

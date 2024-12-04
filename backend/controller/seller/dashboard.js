@@ -26,7 +26,7 @@ class Dashboard {
   }
 
   // [GET] /revenue/month
-  async revenueByMonth(month = (new Date()).getMonth()) {
+  async revenueByMonth(month = (new Date()).getMonth() + 1) {
     return await OrderDetail.findAll({
       attributes: [
         [sequelize.fn("SUM", sequelize.col("price")), "totalByMonth"],

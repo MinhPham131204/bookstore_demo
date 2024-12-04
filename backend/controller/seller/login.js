@@ -1,16 +1,16 @@
-const Customer = require("../../model/customer");
+const Seller = require("../../model/seller");
 
 class LoginController {
 
   // [POST] /createUser
   async register(req, res) {
-    const existingUser=await Customer.findOne({email:req.body.email})
+    const existingUser=await Seller.findOne({email:req.body.email})
 
     if(existingUser){
       res.send.json({"message":"Email này đã đăng kí"})
     }
 
-    const newUser = await Customer.create(req.body);
+    const newUser = await Seller.create(req.body);
 
     res.cookie('userID', newUser.userID, {
       maxAge: 24 * 60 * 60 * 1000, // 1 day
@@ -29,7 +29,7 @@ class LoginController {
   // [POST] /validateUser
   async userLogin(req, res) {
     try {
-      const checkUser = await Customer.findOne({
+      const checkUser = await Seller.findOne({
         where: {
           username: req.body.email,
           hashPassword: req.body.hashPassword,
@@ -37,33 +37,19 @@ class LoginController {
       })
 
       if(checkUser){
-        res.cookie('userID', checkUser.userID, {
+        res.cookie('ID', checkUser.ID, {
           maxAge: 24 * 60 * 60 * 1000, // 1 day
           httpOnly: true,
           secure: true,
         })
 
-        res.status(200).redirect('/main-page');
+        res.status(200).redirect('/seller/dashboard');
       } 
 
-      else res.status(404).json({error: 'Thông tin người dùng không tồn tại'});
+      else res.status(404).json({error: 'Tài khoản nhà bán không tồn tại'});
     }
     catch (err) {
       res.status(500).send('Server error')
-    }
-  }
-
-  // [GET] /logout
-  async logout(req,res){
-    try {
-      res.cookie('user',{
-          maxAge:0,
-          httpOnly:true,
-      })
-      res.status(200).redirect('/login')
-    } 
-    catch (error) {
-        console.log(error);
     }
   }
 
