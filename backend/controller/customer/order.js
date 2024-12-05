@@ -7,49 +7,29 @@ const Rating = require("../../model/rating");
 
 class OrderController {
   
-  // [POST] /storeInfo
-  async createOrder(req, res) {
-
-    res.redirect("/order/orderInfo");
-  }
-
   // [GET] /orderInfo
   async getInfo(req, res) {
-    const findAddress = await Customer.findOne({
-      attributes: ["province", "userAddress"],
-      where: {
-        userID: req.cookies.userID,
-      },
-    });
-
-    const newOrder = await Order.create(req.body);
-
-    const bookIDs = req.query.orderInfo.map((item) => item.bookID);
-    const quantityArr = req.query.orderInfo.map((item) => item.quan);
-
-    const result = await Book.findAll({
-      attributes: ["bookID", "price"],
-      where: {
-        bookID: {
-          [Op.in]: bookIDs, // Matches any bookID in the array
+    if(req.cookies.userID){
+      const findAddress = await Customer.findOne({
+        attributes: ["province", "userAddress"],
+        where: {
+          userID: req.cookies.userID,
         },
-      },
-    });
+      });
 
-    for (let i in result) {
-        await OrderDetail.create({
-            orderID: newOrder.orderID,
-            bookID: result[i].bookID,
-            quantity: req.body.bookArr[i].quantity,
-            price: result[i].bookID * req.body.bookArr[i].quantity,
-        })
+      const newOrder = await Order.create(req.body);
+
+      const bookIDs = req.query.orderInfo.map((item) => item.bookID);
+      const quantityArr = req.query.orderInfo.map((item) => item.quantity);
     }
   }
 
-  // [PUT] /confirmOrder
+  // [POST] /confirmOrder
   async confirmOrder(req, res) {
     await Order.update(req.body);
     await OrderDetail.update(req.body);
+
+    res.redirect('/order/orderList')
   }
 
   //[GET] /orderList
@@ -114,23 +94,25 @@ class OrderController {
   // [POST] /rating
   async rating(req, res){
     try {
-      const check = await Rating.findOne({
-        where: {
-          customerID: req.cookies.userID,
-          bookID: req.body.bookID,
-        },
-      });
+      if(req.cookies.userID){
+        const check = await Rating.findOne({
+          where: {
+            customerID: req.cookies.userID,
+            bookID: req.body.bookID,
+          },
+        });
 
-      if(check === 0){
-        await Rating.create({
-          customerID: req.cookies.userID,
-          bookID: req.body.bookID,
-          rating: req.body.rating,
-        })
-        res.status(200).redirect(`/main-page/book-info/?id=${check.req.body.bookID}`)
+        if(check === 0){
+          await Rating.create({
+            customerID: req.cookies.userID,
+            bookID: req.body.bookID,
+            rating: req.body.rating,
+          })
+          res.status(200).redirect('/main-page/book-info/'.concat('', check.req.body.bookID))
+        }
+
+        else res.status(404).json({message: 'Sách đã được đánh giá'})
       }
-
-      else res.status(404).json({message: 'Sách đã được đánh giá'})
     }
     catch(err){
       res.status(500).json('Server error')

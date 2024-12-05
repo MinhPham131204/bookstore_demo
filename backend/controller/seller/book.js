@@ -29,8 +29,7 @@ const drive = google.drive({
 class BookController {
   // [GET] /product/list
   async showBookList(req, res) {
-    return res.json(
-      await sequelize.query(
+    const list = await sequelize.query(
         `
       WITH firstImage as (
         select * from bookImage
@@ -49,7 +48,10 @@ class BookController {
     `,
         { type: sequelize.QueryTypes.SELECT }
       )
-    );
+    
+    if(list.length) res.status(200).json(list)
+
+    else res.status(404).json({err: 'Không có thông tin của sách nào trong cơ sở dữ liệu'})
   }
 
   // [GET] /product/:id/info
@@ -58,21 +60,25 @@ class BookController {
 
     const book = await Book.findByPk(id);
 
-    const result = book.get();
+    if(book) {
+      const result = book.get();
 
-    const img = await BookImage.findAll({
-      where: {
-        bookID: id,
-      },
-    });
+      const img = await BookImage.findAll({
+        where: {
+          bookID: id,
+        },
+      });
 
-    result.image = [];
+      result.image = [];
 
-    for (let e of img) {
-      result.image.push(e.image);
+      for (let e of img) {
+        result.image.push(e.image);
+      }
+
+      res.status(200).json(result);
     }
 
-    return res.json(result);
+    else res.status(404).json({err: 'Không tìm thấy sách'})
   }
 
   // [GET] /product/create => render create new Book UI
@@ -120,23 +126,25 @@ class BookController {
 
   // [GET] /product/rating
   async showRating(req, res) {
-    return res.json(
-      await sequelize.query(
-        `SELECT TOP 20 
-          c.username, 
-          b.title, 
-          r.rating
-       FROM 
-          Customer c
-       JOIN 
-          Rating r ON c.userID = r.customerID
-       JOIN 
-          Book b ON b.bookID = r.bookID
-       ORDER BY 
-          r.rating DESC;`,
-        { type: sequelize.QueryTypes.SELECT }
-      )
-    );
+    const result = await sequelize.query(
+      `SELECT TOP 20 
+        c.username, 
+        b.title, 
+        r.rating
+      FROM 
+        Customer c
+      JOIN 
+        Rating r ON c.userID = r.customerID
+      JOIN 
+        Book b ON b.bookID = r.bookID
+      ORDER BY 
+        r.rating DESC;`,
+      { type: sequelize.QueryTypes.SELECT }
+    )
+
+    if(result.length) res.status(200).json(result)
+
+    else res.json({err: 'Không tìm thấy đánh giá nào'})
   }
 
   // [PUT] /product/:id

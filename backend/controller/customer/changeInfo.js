@@ -3,7 +3,7 @@ const Customer = require("../../model/customer"); // Adjust path to your User mo
 // app.use(methodOverride("_method"));
 
 class Info {
-  //[GET] /Info/:id
+  //[GET] /info
   async showInfo(req, res) {
     try {
       if (req.cookies.userID) {
@@ -13,33 +13,41 @@ class Info {
 
         res.status(200).json(info);
       }
-    } catch (err) {
+    } 
+    catch (err) {
       res.status(500).json("Server error");
     }
   }
 
-  //[PUT] /Info/:id/edit
+  //[PUT] /info/edit
   async changeInfo(req, res) {
     try {
       if (req.cookies.userID) {
-        const info = await Customer.findOne({
-          where: { userID: req.cookies.userID },
-        });
-
         await Customer.update(req.body, {
           where: {
             userID: req.cookies.userID,
           },
         });
-
-        res.status(200).redirect("");
       }
-    } catch (err) {
+    } 
+    catch (err) {
       res.status(500).json("Server error");
     }
   }
 
-  // [PUT] /Info/:id/changePassword
+  //[GET] /info/change-password-form
+  async passwordUI(req, res) {
+    try {
+      if (req.cookies.userID) {
+        res.render('') // render changing password form
+      }
+    } 
+    catch (err) {
+      res.status(500).json("Server error");
+    }
+  }
+
+  // [PUT] /info/confirm-change-password
   async changePassword(req, res) {
     try{
       if (req.cookies.userID) {
@@ -62,6 +70,8 @@ class Info {
                 },
               }
             );
+
+            res.status(200).json({message: "Thay đổi mật khẩu thành công"})
           } 
           else {
             return res.json(404)({

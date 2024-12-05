@@ -3,6 +3,7 @@ const sequelize = require("../../database/configDB");
 const Category = require("../../model/category");
 const Book = require("../../model/book");
 const BookImage = require("../../model/image");
+const Rating = require("../../model/rating");
 
 class BookController {
 
@@ -132,7 +133,7 @@ class BookController {
               GROUP BY bookID
             )
           )
-          SELECT b.bookID, b.title, b.price, img.image
+          SELECT TOP 5 b.bookID, b.title, b.price, img.image
           FROM Book b
           JOIN firstImage img ON b.bookID = img.bookID
           JOIN Category c ON c.ID = b.categoryID AND c.ID = :categoryId
@@ -143,6 +144,15 @@ class BookController {
             type: sequelize.QueryTypes.SELECT,
           }
         );
+
+        result.rating = await Rating.findAll({
+          attributes: [
+              [Sequelize.fn('AVG', Sequelize.col('rating')), 'averageRating']
+          ],
+          where: {
+            bookID: req.params.id
+          }
+        });
 
         res.status(200).json(result)
       }

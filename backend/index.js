@@ -23,8 +23,8 @@ app.engine('.hbs', handlebars.engine({
 app.set('view engine', '.hbs');
 app.set('views', './views')
 
+routeCustomer(app);
 routeSeller(app)
-routeCustomer(app)
 
 app.listen(port, () => {
   console.log(`Example app listening on port http://localhost:${port}`);

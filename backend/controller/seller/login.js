@@ -18,7 +18,7 @@ class LoginController {
       secure: true,
     })
 
-    res.status(200).redirect('/main-page');
+    res.status(200).redirect('/seller/dashboard');
   }
 
   // [GET] /login
