@@ -5,6 +5,7 @@ const changeInfoController = require ('../../controller/customer/changeInfo')
 
 router.get('/', changeInfoController.showInfo);
 router.put('/edit', changeInfoController.changeInfo);
-router.put('/changePassword', changeInfoController.changePassword);
+router.get('/change-password-form', changeInfoController.passwordUI)
+router.put('/confirm-change-password', changeInfoController.changePassword);
 
 module.exports = router;
