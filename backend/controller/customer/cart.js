@@ -1,5 +1,5 @@
 const { Op } = require("sequelize");
-const sequelize = require("../../database/configDB");
+
 const Book = require("../../model/book");
 const Cart = require("../../model/cart");
 
@@ -51,6 +51,7 @@ class CartController {
             where: {
               customerID: req.cookies.userID,
             },
+            order: ['bookID']
         });
 
         if(result.length) {
@@ -64,6 +65,7 @@ class CartController {
                 [Op.in]: bookIDs, 
               },
             },
+            order: ['bookID'],
           });
 
           let totalPrice = 0

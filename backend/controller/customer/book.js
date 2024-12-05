@@ -137,10 +137,14 @@ class BookController {
           FROM Book b
           JOIN firstImage img ON b.bookID = img.bookID
           JOIN Category c ON c.ID = b.categoryID AND c.ID = :categoryId
+          where not b.bookID = :bookId
           ORDER BY b.soldAmount DESC
           `,
           {
-            replacements: { categoryId: result.categoryID },
+            replacements: { 
+              categoryId: result.categoryID,
+              bookId: req.params.id,
+            },
             type: sequelize.QueryTypes.SELECT,
           }
         );

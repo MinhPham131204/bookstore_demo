@@ -31,7 +31,7 @@ class LoginController {
     try {
       const checkUser = await Customer.findOne({
         where: {
-          username: req.body.email,
+          email: req.body.email,
           hashPassword: req.body.hashPassword,
         }
       })
@@ -49,16 +49,16 @@ class LoginController {
       else res.status(404).json({error: 'Thông tin người dùng không tồn tại'});
     }
     catch (err) {
-      res.status(500).send('Server error')
+      res.status(500).json('Server error')
     }
   }
 
   // [GET] /logout
   async logout(req,res){
     try {
-      res.cookie('user',{
-          maxAge:0,
-          httpOnly:true,
+      res.cookie('userID',{
+          maxAge: 0,
+          httpOnly: true,
       })
       res.status(200).redirect('/login')
     } 
