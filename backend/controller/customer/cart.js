@@ -39,51 +39,49 @@ class CartController {
   // [GET] /cart
   async getByID(req, res) {
     try {
-      if(req.cookies.userID) {
-        const result = await Cart.findAll({
-            attributes: ['bookID', 'quantity'],
-            include: [
-              {
-                model: Book,
-                attributes: ['title'],
-              }
-            ],
-            where: {
-              customerID: req.cookies.userID, // sửa lại theo userID được lưu trong csdl
+      const result = await Cart.findAll({
+          attributes: ['bookID', 'quantity'],
+          include: [
+            {
+              model: Book,
+              attributes: ['title'],
+            }
+          ],
+          where: {
+            customerID: req.cookies.userID, // sửa lại theo userID được lưu trong csdl
+          },
+          order: ['bookID']
+      });
+
+      if(result.length) {
+
+        const bookIDs = result.map((item) => item.bookID);
+
+        const priceByBookID = await Book.findAll({
+          attributes: ["bookID", "price"],
+          where: {
+            bookID: {
+              [Op.in]: bookIDs, 
             },
-            order: ['bookID']
+          },
+          order: ['bookID'],
         });
 
-        if(result.length) {
+        let totalPrice = 0
 
-          const bookIDs = result.map((item) => item.bookID);
-
-          const priceByBookID = await Book.findAll({
-            attributes: ["bookID", "price"],
-            where: {
-              bookID: {
-                [Op.in]: bookIDs, 
-              },
-            },
-            order: ['bookID'],
-          });
-
-          let totalPrice = 0
-
-          for (let i in result) {
-            totalPrice += priceByBookID[i].price * result[i].quantity
-          }
-
-          const response = {
-              result,
-              totalPrice,
-          }
-
-          res.status(200).json(response)
+        for (let i in result) {
+          totalPrice += priceByBookID[i].price * result[i].quantity
         }
 
-        else res.status(404).json({error: 'Chưa có sản phẩm trong giỏ hàng'})
+        const response = {
+            result,
+            totalPrice,
+        }
+
+        res.status(200).json(response)
       }
+
+      else res.status(404).json({error: 'Chưa có sản phẩm trong giỏ hàng'})
     }
     catch (err){
       res.status(500).json('Server error')
