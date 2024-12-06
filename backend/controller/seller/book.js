@@ -8,6 +8,7 @@ require("dotenv").config();
 const { google } = require("googleapis");
 const fs = require("fs");
 const path = require("path");
+const Category = require("../../model/category");
 
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
@@ -82,8 +83,14 @@ class BookController {
   }
 
   // [GET] /product/create => render create new Book UI
-  create(req, res) {
-    res.render("form");
+  async create(req, res) {
+    // res.render("form");
+    try {
+      res.status(200).json(await Category.findAll())
+    }
+    catch(err) {
+      res.status(500).json({err: 'Server error'})
+    }
   }
 
   // [POST] => re-direct to /product/list after creating
