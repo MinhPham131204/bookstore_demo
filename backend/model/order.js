@@ -23,6 +23,7 @@ const Orders = sequelize.define("Orders",
     },
     province: {
       type: DataTypes.STRING(20),
+      allowNull: true,
     },
     orderAddress: {
       type: DataTypes.TEXT, 
@@ -36,6 +37,7 @@ const Orders = sequelize.define("Orders",
           msg: 'Invalid delivery status',
         },
       },
+      defaultValue: 'Đang vận chuyển',
     },
     orderedTime: {
       type: DataTypes.DATE,
@@ -50,6 +52,7 @@ const Orders = sequelize.define("Orders",
           msg: 'Invalid payment method',
         },
       },
+      defaultValue: 'Thanh toán trực tiếp',
     },
     paymentDate: {
       type: DataTypes.DATE,

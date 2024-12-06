@@ -1,5 +1,4 @@
-const sequelize = require("../../database/configDB");
-const Book = require("../../model/book");
+const Cart = require("../../model/cart");
 const Order = require("../../model/cart");
 const Customer = require("../../model/customer");
 const OrderDetail = require("../../model/orderDetail");
@@ -9,25 +8,41 @@ class OrderController {
   
   // [GET] /orderInfo
   async getInfo(req, res) {
-    const findAddress = await Customer.findOne({
-      attributes: ["province", "userAddress"],
+    const userInfo = await Customer.findOne({
+      attributes: ["username", "phoneNum", "userAddress"],
       where: {
         userID: req.cookies.userID, // sửa lại theo userID được lưu trong csdl
       },
     });
 
-    const newOrder = await Order.create(req.body);
+    userInfo.cart = await Cart.findAll({
+      where: {
+        customerID: req.cookies.userID, // sửa lại theo userID được lưu trong csdl
+      }
+    })
 
-    const bookIDs = req.query.orderInfo.map((item) => item.bookID);
-    const quantityArr = req.query.orderInfo.map((item) => item.quantity);
+    res.status(200).json(userInfo)
   }
 
   // [POST] /confirmOrder
   async confirmOrder(req, res) {
-    await Order.update(req.body);
-    await OrderDetail.update(req.body);
+    await Order.create(req.body);
 
-    res.redirect('/order/orderList')
+    const cart = await Cart.findAll({
+      where: {
+        customerID: req.cookies.userID, // sửa lại theo userID được lưu trong csdl
+      }
+    })
+
+    for (let e of cart){
+      await OrderDetail.create(e)
+    }
+
+    await Cart.destroy({
+      where: {
+        customerID: req.cookies.userID, // sửa lại theo userID được lưu trong csdl
+      },
+    })
   }
 
   //[GET] /orderList
