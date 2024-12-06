@@ -9,7 +9,7 @@ class Password{
       if(await Customer.findOne({
         where:{email:req.body.email}
       })){
-        res.redirect('/password/changePassword')
+        res.redirect('/password/changePassword') 
       }
       else{
         return res.json(404)({

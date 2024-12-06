@@ -6,34 +6,32 @@ const Cart = require("../../model/cart");
 class CartController {
   // [POST] /add_to_cart
   async addBook(req, res) {
-    if(req.cookies.userID){
-      const check = await Cart.findAll({
-        where: {
+    const check = await Cart.findAll({
+      where: {
+        customerID: req.cookies.userID, // sửa lại theo userID được lưu trong csdl
+        bookID: req.body.bookID,
+      },
+    });
+
+    check.length === 0
+      ? await Cart.create({
           customerID: req.cookies.userID, // sửa lại theo userID được lưu trong csdl
           bookID: req.body.bookID,
-        },
-      });
-
-      check.length === 0
-        ? await Cart.create({
-            customerID: req.cookies.userID, // sửa lại theo userID được lưu trong csdl
-            bookID: req.body.bookID,
-            quantity: req.body.quantity,
-          })
-        : await Cart.update(
-            {
-              quantity: req.body.quantity, // Ensure `check[0]` holds the current quantity.
+          quantity: req.body.quantity,
+        })
+      : await Cart.update(
+          {
+            quantity: req.body.quantity, // Ensure `check[0]` holds the current quantity.
+          },
+          {
+            where: {
+              customerID: req.cookies.userID, // sửa lại theo userID được lưu trong csdl
+              bookID: req.body.bookID,
             },
-            {
-              where: {
-                customerID: req.cookies.userID, // sửa lại theo userID được lưu trong csdl
-                bookID: req.body.bookID,
-              },
-            }
-          );
-      
-      res.redirect('/cart')
-    }
+          }
+        );
+    
+    res.redirect('/cart')
   }
 
   // [GET] /cart
