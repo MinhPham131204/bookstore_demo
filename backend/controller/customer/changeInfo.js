@@ -50,40 +50,38 @@ class Info {
   // [PUT] /info/confirm-change-password
   async changePassword(req, res) {
     try{
-      if (req.cookies.userID) {
-        const user = await Customer.findAll({
-          attributes: ["hashPassword"],
-          where: { hashPassword: req.body.hashPassword },
-        });
-        if (user.length) {
-          const newPassword = req.body.newPassword;
+      const user = await Customer.findAll({
+        attributes: ["hashPassword"],
+        where: { hashPassword: req.body.hashPassword },
+      });
+      if (user.length) {
+        const newPassword = req.body.newPassword;
 
-          const confirmPassword = req.body.confirmPassword;
-          if (newPassword == confirmPassword) {
-            await Customer.update(
-              {
-                hashPassword: newPassword,
+        const confirmPassword = req.body.confirmPassword;
+        if (newPassword == confirmPassword) {
+          await Customer.update(
+            {
+              hashPassword: newPassword,
+            },
+            {
+              where: {
+                userID: req.cookies.userID,
               },
-              {
-                where: {
-                  userID: req.cookies.userID,
-                },
-              }
-            );
+            }
+          );
 
-            res.status(200).json({message: "Thay đổi mật khẩu thành công"})
-          } 
-          else {
-            return res.json(404)({
-              message: "Nhập lại mật khẩu không đúng",
-            });
-          }
+          res.status(200).json({message: "Thay đổi mật khẩu thành công"})
         } 
         else {
           return res.json(404)({
-            message: "Mật khẩu người dùng không chính xác",
+            message: "Nhập lại mật khẩu không đúng",
           });
         }
+      } 
+      else {
+        return res.json(404)({
+          message: "Mật khẩu người dùng không chính xác",
+        });
       }
     }
     catch(err) {

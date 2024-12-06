@@ -9,14 +9,14 @@ class CartController {
     if(req.cookies.userID){
       const check = await Cart.findAll({
         where: {
-          customerID: req.cookies.userID,
+          customerID: req.cookies.userID, // sửa lại theo userID được lưu trong csdl
           bookID: req.body.bookID,
         },
       });
 
       check.length === 0
         ? await Cart.create({
-            customerID: req.cookies.userID,
+            customerID: req.cookies.userID, // sửa lại theo userID được lưu trong csdl
             bookID: req.body.bookID,
             quantity: req.body.quantity,
           })
@@ -26,7 +26,7 @@ class CartController {
             },
             {
               where: {
-                customerID: req.cookies.userID,
+                customerID: req.cookies.userID, // sửa lại theo userID được lưu trong csdl
                 bookID: req.body.bookID,
               },
             }
@@ -49,7 +49,7 @@ class CartController {
               }
             ],
             where: {
-              customerID: req.cookies.userID,
+              customerID: req.cookies.userID, // sửa lại theo userID được lưu trong csdl
             },
             order: ['bookID']
         });

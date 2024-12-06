@@ -37,11 +37,11 @@ class LoginController {
       })
 
       if(checkUser){
-        res.cookie('userID', checkUser.userID, {
-          maxAge: 24 * 60 * 60 * 1000, // 1 day
-          httpOnly: true,
-          secure: true,
-        })
+        // res.cookie('userID', checkUser.userID, {
+        //   maxAge: 24 * 60 * 60 * 1000, // 1 day
+        //   httpOnly: true,
+        //   secure: true,
+        // })
 
         res.status(200).redirect('/main-page');
       } 

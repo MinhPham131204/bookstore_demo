@@ -9,19 +9,17 @@ class OrderController {
   
   // [GET] /orderInfo
   async getInfo(req, res) {
-    if(req.cookies.userID){
-      const findAddress = await Customer.findOne({
-        attributes: ["province", "userAddress"],
-        where: {
-          userID: req.cookies.userID,
-        },
-      });
+    const findAddress = await Customer.findOne({
+      attributes: ["province", "userAddress"],
+      where: {
+        userID: req.cookies.userID, // sửa lại theo userID được lưu trong csdl
+      },
+    });
 
-      const newOrder = await Order.create(req.body);
+    const newOrder = await Order.create(req.body);
 
-      const bookIDs = req.query.orderInfo.map((item) => item.bookID);
-      const quantityArr = req.query.orderInfo.map((item) => item.quantity);
-    }
+    const bookIDs = req.query.orderInfo.map((item) => item.bookID);
+    const quantityArr = req.query.orderInfo.map((item) => item.quantity);
   }
 
   // [POST] /confirmOrder
@@ -35,15 +33,13 @@ class OrderController {
   //[GET] /orderList
   async showOrderList(req,res){
     try{
-      if(req.cookies.userID){
-        const result = await OrderDetail.findAll({
-          where: {customerID: req.cookies.userID}
-        })
+      const result = await OrderDetail.findAll({
+        where: {customerID: req.cookies.userID} // sửa lại theo userID được lưu trong csdl
+      })
 
-        if(result.length) res.status(200).json(result)
+      if(result.length) res.status(200).json(result)
 
-        else res.status(404).json({error: 'Chưa có đơn hàng'})
-      }
+      else res.status(404).json({error: 'Chưa có đơn hàng'})
     }
     
     catch (err){
@@ -54,21 +50,19 @@ class OrderController {
   //[GET] /orderList/:id
   async showOrderList(req,res){
     try{
-      if(req.cookies.userID){
-        const result = await OrderDetail.findOne({
-          where: {ID: req.params.id},
-          include: [
-            {
-              model: Order,
-              attributes: ['orderID', 'orderAddress', 'deliveryStatus', 'orderedTime', 'paymentDate', 'deliveryFee']
-            }
-          ]
-        })
+      const result = await OrderDetail.findOne({
+        where: {ID: req.params.id},
+        include: [
+          {
+            model: Order,
+            attributes: ['orderID', 'orderAddress', 'deliveryStatus', 'orderedTime', 'paymentDate', 'deliveryFee']
+          }
+        ]
+      })
 
-        if(result) res.status(200).json(result)
+      if(result) res.status(200).json(result)
 
-        else res.status(404).json({error: 'Chưa có đơn hàng'})
-      }
+      else res.status(404).json({error: 'Chưa có đơn hàng'})
     }
     
     catch (err){
@@ -94,25 +88,23 @@ class OrderController {
   // [POST] /rating
   async rating(req, res){
     try {
-      if(req.cookies.userID){
-        const check = await Rating.findOne({
-          where: {
-            customerID: req.cookies.userID,
-            bookID: req.body.bookID,
-          },
-        });
+      const check = await Rating.findOne({
+        where: {
+          customerID: req.cookies.userID, // sửa lại theo userID được lưu trong csdl
+          bookID: req.body.bookID,
+        },
+      });
 
-        if(check === 0){
-          await Rating.create({
-            customerID: req.cookies.userID,
-            bookID: req.body.bookID,
-            rating: req.body.rating,
-          })
-          res.status(200).redirect('/main-page/book-info/'.concat('', check.req.body.bookID))
-        }
-
-        else res.status(404).json({message: 'Sách đã được đánh giá'})
+      if(check === 0){
+        await Rating.create({
+          customerID: req.cookies.userID, // sửa lại theo userID được lưu trong csdl
+          bookID: req.body.bookID,
+          rating: req.body.rating,
+        })
+        res.status(200).redirect('/main-page/book-info/'.concat('', check.req.body.bookID))
       }
+
+      else res.status(404).json({message: 'Sách đã được đánh giá'})
     }
     catch(err){
       res.status(500).json('Server error')
