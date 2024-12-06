@@ -22,7 +22,7 @@ class CartController {
           })
         : await Cart.update(
             {
-              quantity: check[0].quantity + req.body.quantity, // Ensure `check[0]` holds the current quantity.
+              quantity: req.body.quantity, // Ensure `check[0]` holds the current quantity.
             },
             {
               where: {

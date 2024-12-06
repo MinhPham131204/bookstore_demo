@@ -6,13 +6,11 @@ class Info {
   //[GET] /info
   async showInfo(req, res) {
     try {
-      if (req.cookies.userID) {
-        const info = await Customer.findOne({
-          where: { userID: req.cookies.userID },
-        });
+      const info = await Customer.findOne({
+        where: { userID: req.cookies.userID }, // sửa lại theo userID được lưu trong csdl
+      });
 
-        res.status(200).json(info);
-      }
+      res.status(200).json(info);
     } 
     catch (err) {
       res.status(500).json("Server error");
@@ -22,13 +20,11 @@ class Info {
   //[PUT] /info/edit
   async changeInfo(req, res) {
     try {
-      if (req.cookies.userID) {
-        await Customer.update(req.body, {
-          where: {
-            userID: req.cookies.userID,
-          },
-        });
-      }
+      await Customer.update(req.body, {
+        where: {
+          userID: req.cookies.userID,
+        },
+      });
     } 
     catch (err) {
       res.status(500).json("Server error");
@@ -38,9 +34,7 @@ class Info {
   //[GET] /info/change-password-form
   async passwordUI(req, res) {
     try {
-      if (req.cookies.userID) {
-        res.render('') // render changing password form
-      }
+      res.render('') // render changing password form
     } 
     catch (err) {
       res.status(500).json("Server error");
