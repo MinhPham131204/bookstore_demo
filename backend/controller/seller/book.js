@@ -156,7 +156,16 @@ class BookController {
 
   // [PUT] /product/:id
   async updateBook(req, res) {
-    return await Book.update(
+    await Book.update(
+      req.body,
+      {
+        where: {
+          bookID: req.params.id,
+        },
+      },
+    );
+
+    await BookImage.update(
       req.body,
       {
         where: {

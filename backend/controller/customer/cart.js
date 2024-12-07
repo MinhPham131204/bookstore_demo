@@ -86,10 +86,11 @@ class CartController {
     }
   }
 
-  // [DELETE] /:id
+  // [DELETE] /delete/:id
   async removeBook(req, res) {
     return await Cart.destroy({
       where: {
+        customerID: req.cookies.userID, // sửa lại theo userID được lưu trong csdl
         bookID: req.param.id,
       },
     });
