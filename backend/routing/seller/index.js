@@ -5,6 +5,7 @@ const deliveryRouter = require('./delivery')
 const discount = require('./discount')
 const dashboard = require('./dashboard')
 const loginRouter = require('./login')
+const userRouter = require('./user')
 
 // function requireLogin(req, res, next) {
 //     if (req.cookies.ID) {
@@ -23,6 +24,7 @@ function route(app) {
     app.use('/seller/delivery_fee', deliveryRouter)
     app.use('/seller/discount', discount)
     app.use('/seller/dashboard', dashboard)
+    app.use('/seller/user', userRouter)
 }
 
 module.exports = route;

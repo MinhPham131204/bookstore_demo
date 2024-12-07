@@ -42,7 +42,7 @@ class CartController {
           include: [
             {
               model: Book,
-              attributes: ['title'],
+              attributes: ['title', 'price'],
             }
           ],
           where: {
