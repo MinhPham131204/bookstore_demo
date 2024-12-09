@@ -91,7 +91,7 @@ class CartController {
     return await Cart.destroy({
       where: {
         customerID: req.cookies.userID, // sửa lại theo userID được lưu trong csdl
-        bookID: req.param.id,
+        bookID: req.params.id,
       },
     });
   }
