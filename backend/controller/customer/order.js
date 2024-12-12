@@ -1,3 +1,4 @@
+const Book = require("../../model/book");
 const Cart = require("../../model/cart");
 const Order = require("../../model/cart");
 const Customer = require("../../model/customer");
@@ -26,7 +27,7 @@ class OrderController {
 
   // [POST] /confirmOrder
   async confirmOrder(req, res) {
-    await Order.create(req.body);
+    const order = await Order.create(req.body);
 
     const cart = await Cart.findAll({
       where: {
@@ -35,6 +36,11 @@ class OrderController {
     })
 
     for (let e of cart){
+      e.orderID = order.orderID
+      
+      const price = Book.findOne({ where: { bookID: e.bookID } })
+      e.price = price * e.quantity
+      
       await OrderDetail.create(e)
     }
 
