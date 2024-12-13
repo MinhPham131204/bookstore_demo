@@ -1,6 +1,6 @@
 const Book = require("../../model/book");
 const Cart = require("../../model/cart");
-const Order = require("../../model/cart");
+const Order = require("../../model/order");
 const Customer = require("../../model/customer");
 const OrderDetail = require("../../model/orderDetail");
 const Rating = require("../../model/rating");
@@ -35,27 +35,46 @@ class OrderController {
       }
     })
 
-    for (let e of cart){
-      e.orderID = order.orderID
-      
-      const price = Book.findOne({ where: { bookID: e.bookID } })
-      e.price = price * e.quantity
-      
-      await OrderDetail.create(e)
-    }
+    // Tạo danh sách OrderDetail
+    const orderDetails = await Promise.all(
+      cart.map(async (item) => {
+          const book = await Book.findOne({ where: { bookID: item.bookID } });
+          if (!book) {
+              throw new Error(`Book with ID ${item.bookID} not found`);
+          }
+
+          return {
+              orderID: order.orderID,
+              bookID: item.bookID,
+              quantity: item.quantity,
+              price: book.price * item.quantity,
+          };
+      })
+    );
+
+    // Lưu các OrderDetail vào cơ sở dữ liệu
+    await OrderDetail.bulkCreate(orderDetails);
 
     await Cart.destroy({
       where: {
         customerID: req.cookies.userID, // sửa lại theo userID được lưu trong csdl
       },
     })
+
+    res.redirect('/order/orderList')
   }
 
   //[GET] /orderList
   async showOrderList(req,res){
     try{
-      const result = await OrderDetail.findAll({
-        where: {customerID: req.cookies.userID} // sửa lại theo userID được lưu trong csdl
+      const result = await Order.findAll({
+        where: {customerID: 3}, // sửa lại theo userID được lưu trong csdl
+        include: [
+          {
+            model: OrderDetail,
+            attributes: ['bookID', 'quantity']
+          }
+        ]
       })
 
       if(result.length) res.status(200).json(result)
@@ -64,29 +83,7 @@ class OrderController {
     }
     
     catch (err){
-      res.status(500).json('Server error')
-    }
-  }
-
-  //[GET] /orderList/:id
-  async showOrderList(req,res){
-    try{
-      const result = await OrderDetail.findOne({
-        where: {ID: req.params.id},
-        include: [
-          {
-            model: Order,
-            attributes: ['orderID', 'orderAddress', 'deliveryStatus', 'orderedTime', 'paymentDate', 'deliveryFee']
-          }
-        ]
-      })
-
-      if(result) res.status(200).json(result)
-
-      else res.status(404).json({error: 'Chưa có đơn hàng'})
-    }
-    
-    catch (err){
+      console.log(err)
       res.status(500).json('Server error')
     }
   }
