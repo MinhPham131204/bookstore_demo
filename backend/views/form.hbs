@@ -1,0 +1,75 @@
+<div class="mt-4" style="margin-left: 20%; margin-right: 20%;">
+    <form method="POST" action="/seller/product/store" enctype="multipart/form-data">
+        {{!-- title --}}
+        <div class="form-group">
+            <label for="title">Tên sách</label>
+            <input type="text" class="form-control" id="title" name="title" required>
+        </div>
+
+        {{!-- author --}}
+        <div class="form-group">
+            <label for="author">Tác giả</label>
+            <input type="text" class="form-control" id="author" name="author" required>
+        </div>
+
+        {{!-- translator --}}
+        <div class="form-group">
+            <label for="translator">Người dịch</label>
+            <input type="text" class="form-control" id="translator" name="translator">
+        </div>
+
+        {{!-- category --}}
+        <div class="form-group">
+            <label for="categoryID">Danh mục</label>
+            <input type="text" class="form-control" id="categoryID" name="categoryID">
+        </div>
+
+        {{!-- price --}}
+        <div class="form-group">
+            <label for="price">giá tiền</label>
+            <input type="text"  class="form-control" id="price" name="price" oninput="
+                let value = this.value.replace(/\D/g, ''); 
+                value = value.replace(/\B(?=(\d{3})+(?!\d))/g, '.'); 
+                this.value = value;" 
+                required>
+        </div>
+
+        {{!-- publisher --}}
+        <div class="form-group">
+            <label for="publisher">Nhà xuất bản</label>
+            <input type="text" class="form-control" id="publisher" name="publisher" required>
+        </div>
+
+        {{!-- year --}}
+        <div class="form-group">
+            <label for="publishYear">Năm xuất bản</label>
+            <input type="text" class="form-control" id="publishYear" name="publishYear" required>
+        </div>
+
+        {{!-- num of pages --}}
+        <div class="form-group">
+            <label for="numOfPages">Số trang</label>
+            <input type="text" class="form-control" id="numOfPages" name="numOfPages">
+        </div>
+
+        {{!-- bookWeight --}}
+        <div class="form-group">
+            <label for="bookWeight">Trọng lượng (g)</label>
+            <input type="text" class="form-control" id="bookWeight" name="bookWeight">
+        </div>
+
+        {{!-- stockQuantity --}}
+        <div class="form-group">
+            <label for="stockQuantity">Số lượng tồn kho</label>
+            <input type="text" class="form-control" id="stockQuantity" name="stockQuantity" required>
+        </div>
+
+
+        <div class="form-group">
+            <label for="image">Hình ảnh</label>
+            <input type="file" class='form-control' accept="image/jpeg,image/png,image/jpg" multiple="" id="image" name="image">
+        </div>
+
+        <button type="submit" class="btn btn-primary">Thêm khóa học</button>
+    </form>
+</div>

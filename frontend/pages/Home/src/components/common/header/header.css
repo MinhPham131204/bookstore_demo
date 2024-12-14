@@ -1,0 +1,31 @@
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Ga+Maamli&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+header {
+    padding: 6px;
+    background-color: #FF2D55;
+  }
+  
+.wrapperhead {
+    display: flex;
+    align-items: center;
+}
+  
+.logo {
+    height: 50px; 
+    margin-left: 30px;
+    margin-right: 20px; 
+    margin-top: 0;
+    margin-bottom: 0;
+}
+  
+.slogan {
+    display: flex;
+    flex-grow: 1; 
+    justify-content: center;
+    align-items: center;
+}
+  
+.slogan p {
+    font-size: 2.5rem; 
+    color: white; 
+    font-family: "Ga Maamli", sans-serif;
+}
