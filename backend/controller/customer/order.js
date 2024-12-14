@@ -12,13 +12,13 @@ class OrderController {
     const userInfo = await Customer.findOne({
       attributes: ["username", "phoneNum", "userAddress"],
       where: {
-        userID: req.cookies.userID, // sửa lại theo userID được lưu trong csdl
+        userID: 5, // sửa lại theo userID được lưu trong csdl
       },
     });
 
     userInfo.cart = await Cart.findAll({
       where: {
-        customerID: req.cookies.userID, // sửa lại theo userID được lưu trong csdl
+        customerID: 5, // sửa lại theo userID được lưu trong csdl
       }
     })
 
@@ -31,7 +31,7 @@ class OrderController {
 
     const cart = await Cart.findAll({
       where: {
-        customerID: req.cookies.userID, // sửa lại theo userID được lưu trong csdl
+        customerID: 5, // sửa lại theo userID được lưu trong csdl
       }
     })
 
@@ -57,7 +57,7 @@ class OrderController {
 
     await Cart.destroy({
       where: {
-        customerID: req.cookies.userID, // sửa lại theo userID được lưu trong csdl
+        customerID: 5, // sửa lại theo userID được lưu trong csdl
       },
     })
 
@@ -68,7 +68,7 @@ class OrderController {
   async showOrderList(req,res){
     try{
       const result = await Order.findAll({
-        where: {customerID: 3}, // sửa lại theo userID được lưu trong csdl
+        where: {customerID: 5}, // sửa lại theo userID được lưu trong csdl
         include: [
           {
             model: OrderDetail,
@@ -108,14 +108,14 @@ class OrderController {
     try {
       const check = await Rating.findOne({
         where: {
-          customerID: req.cookies.userID, // sửa lại theo userID được lưu trong csdl
+          customerID: 5, // sửa lại theo userID được lưu trong csdl
           bookID: req.body.bookID,
         },
       });
 
       if(check === 0){
         await Rating.create({
-          customerID: req.cookies.userID, // sửa lại theo userID được lưu trong csdl
+          customerID: 5, // sửa lại theo userID được lưu trong csdl
           bookID: req.body.bookID,
           rating: req.body.rating,
         })

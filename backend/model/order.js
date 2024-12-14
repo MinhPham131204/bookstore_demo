@@ -56,6 +56,7 @@ const Orders = sequelize.define("Orders",
     },
     paymentDate: {
       type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
     },
     deliveryFee: {
       type: DataTypes.INTEGER,

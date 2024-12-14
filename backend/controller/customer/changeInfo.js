@@ -6,11 +6,13 @@ class Info {
   //[GET] /info
   async showInfo(req, res) {
     try {
-      const info = await Customer.findOne({
-        where: { userID: req.cookies.userID }, // sửa lại theo userID được lưu trong csdl
-      });
+      if (req.cookies.userID) {
+        const info = await Customer.findOne({
+          where: { userID: req.cookies.userID },
+        });
 
-      res.status(200).json(info);
+        res.status(200).json(info);
+      }
     } 
     catch (err) {
       res.status(500).json("Server error");
@@ -20,11 +22,13 @@ class Info {
   //[PUT] /info/edit
   async changeInfo(req, res) {
     try {
-      await Customer.update(req.body, {
-        where: {
-          userID: req.cookies.userID,
-        },
-      });
+      if (req.cookies.userID) {
+        await Customer.update(req.body, {
+          where: {
+            userID: req.cookies.userID,
+          },
+        });
+      }
     } 
     catch (err) {
       res.status(500).json("Server error");
@@ -34,7 +38,9 @@ class Info {
   //[GET] /info/change-password-form
   async passwordUI(req, res) {
     try {
-      res.render('') // render changing password form
+      if (req.cookies.userID) {
+        res.render('') // render changing password form
+      }
     } 
     catch (err) {
       res.status(500).json("Server error");
@@ -44,38 +50,40 @@ class Info {
   // [PUT] /info/confirm-change-password
   async changePassword(req, res) {
     try{
-      const user = await Customer.findAll({
-        attributes: ["hashPassword"],
-        where: { hashPassword: req.body.hashPassword },
-      });
-      if (user.length) {
-        const newPassword = req.body.newPassword;
+      if (req.cookies.userID) {
+        const user = await Customer.findAll({
+          attributes: ["hashPassword"],
+          where: { hashPassword: req.body.hashPassword },
+        });
+        if (user.length) {
+          const newPassword = req.body.newPassword;
 
-        const confirmPassword = req.body.confirmPassword;
-        if (newPassword == confirmPassword) {
-          await Customer.update(
-            {
-              hashPassword: newPassword,
-            },
-            {
-              where: {
-                userID: req.cookies.userID,
+          const confirmPassword = req.body.confirmPassword;
+          if (newPassword == confirmPassword) {
+            await Customer.update(
+              {
+                hashPassword: newPassword,
               },
-            }
-          );
+              {
+                where: {
+                  userID: req.cookies.userID,
+                },
+              }
+            );
 
-          res.status(200).json({message: "Thay đổi mật khẩu thành công"})
+            res.status(200).json({message: "Thay đổi mật khẩu thành công"})
+          } 
+          else {
+            return res.json(404)({
+              message: "Nhập lại mật khẩu không đúng",
+            });
+          }
         } 
         else {
           return res.json(404)({
-            message: "Nhập lại mật khẩu không đúng",
+            message: "Mật khẩu người dùng không chính xác",
           });
         }
-      } 
-      else {
-        return res.json(404)({
-          message: "Mật khẩu người dùng không chính xác",
-        });
       }
     }
     catch(err) {

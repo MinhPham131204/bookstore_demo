@@ -34,15 +34,14 @@ const Customer = sequelize.define(
     },
     province: {
       type: DataTypes.STRING(20),
-      allowNull: true,
+      allowNull: false,
     },
     userAddress: {
       type: DataTypes.TEXT,
-      allowNull: true,
+      allowNull: false,
     },
     createdTime: {
       type: DataTypes.DATEONLY,
-      defaultValue: DataTypes.NOW,
       allowNull: false,
     },
     bankAccount: {

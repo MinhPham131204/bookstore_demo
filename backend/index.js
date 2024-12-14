@@ -2,14 +2,14 @@ const express = require("express");
 const cookieParser = require('cookie-parser')
 const handlebars = require('express-handlebars');
 const app = express();
-
+const cors = require('cors');
 const routeCustomer = require("./routing/customer/index");
 const routeSeller = require("./routing/seller/index");
 
 const port = 5000;
 
 app.use(cookieParser())
-
+app.use(cors());
 app.use(
   express.urlencoded({
       extended: true,
